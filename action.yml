@@ -1,0 +1,55 @@
+name: archival-identifier
+description: A GitHub Action to identify repositories that may be candidates for archival based on inactivity, usage, repository contents, and criticality score
+
+inputs:
+  ORG:
+    description: 'GitHub organization to analyze'
+    required: true
+  
+  THRESHOLD_TIME:
+    description: 'Number of days of inactivity to consider for archival'
+    required: false
+    default: '180'
+  
+  GITHUB_ORG_TOKEN:
+    description: 'GitHub token for org access'
+    required: true
+    default: ${{ github.token }}
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.11'
+    
+    - name: Install dependencies
+      shell: bash
+      run: |
+        pip install -r ${{ github.action_path }}/requirements.txt
+
+    # - name: Run superchangelog to retrieve development activity data
+    #   id: run-superchangelog
+    #   uses: DSACMS/superchangelog@main
+    #   with:
+    #     ORG: ${{ inputs.ORG }}
+    #     THRESHOLD_TIME: ${{ inputs.THRESHOLD_TIME }}
+    #     GITHUB_ORG_TOKEN: ${{ inputs.GITHUB_ORG_TOKEN }}
+    
+    - name: Run inactivity script
+      id: identify-archival-candidates
+      shell: bash
+      env:
+        ORG: ${{ inputs.ORG }}
+        THRESHOLD_TIME: ${{ inputs.THRESHOLD_TIME }}
+        GITHUB_ORG_TOKEN: ${{ inputs.GITHUB_ORG_TOKEN }}
+      run: |
+        python ${{ github.action_path }}/main.py data.json
+
+    - name: Create issue with archival-identifier results on the repository
+      uses: JasonEtco/create-an-issue@v2
+      env:
+        GITHUB_ORG_TOKEN: ${{ inputs.GITHUB_ORG_TOKEN }}
+      with:
+        filename: ./archival_candidates_report.md
