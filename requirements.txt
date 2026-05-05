@@ -1,0 +1,4 @@
+PyGitHub
+criticality-score==1.0.7
+pytest
+pylint
