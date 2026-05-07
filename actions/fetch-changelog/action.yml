@@ -1,0 +1,95 @@
+name: fetch-changelog
+description: Checks out super-changelog, runs the generate-changelog-historical.py script, and writes data.json
+
+inputs:
+  start_date:
+    description: 'Start date for historical data (YYYY-MM-DD) - required, e.g., 2026-01-01'
+    required: true
+  end_date:
+    description: 'End date for historical data (YYYY-MM-DD) - defaults to today if not provided'
+    required: false
+    default: ''
+  org_name:
+    description: 'GitHub organization name'
+    required: false
+    default: 'DSACMS'
+  github_token:
+    description: 'GitHub token for org access'
+    required: true
+
+outputs:
+  data_file:
+    description: 'Path to the generated data.json file containing historical changelog data'
+    value: ${{ steps.rename.outputs.data_file }}
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Resolve dates
+      id: dates
+      shell: bash
+      run: |
+        START_DATE="${{ inputs.start_date }}"
+        END_DATE="${{ inputs.end_date }}"
+
+        if [ -z "$END_DATE" ]; then
+          END_DATE=$(date +%Y-%m-%d)
+          echo "No end date provided. Using today's date: $END_DATE"
+        fi
+
+        if [[ ! "$START_DATE" =~ ^[0-9]{4}-[0-9]{2}-[0-9]{2}$ ]]; then
+          echo "Error: Invalid start date format. Expected YYYY-MM-DD."
+          exit 1
+        fi
+        if [[ ! "$END_DATE" =~ ^[0-9]{4}-[0-9]{2}-[0-9]{2}$ ]]; then
+          echo "Error: Invalid end date format. Expected YYYY-MM-DD."
+          exit 1
+        fi
+        if [[ "$START_DATE" > "$END_DATE" ]]; then
+          echo "Error: Start date cannot be after end date."
+          exit 1
+        fi
+        
+        echo "start_date=$START_DATE" >> $GITHUB_OUTPUT
+        echo "end_date=$END_DATE" >> $GITHUB_OUTPUT
+
+    - name: Checkout super-changelog repository
+      uses: actions/checkout@v4
+      with:
+        repository: DSACMS/super-changelog
+        ref: main
+        path: _super_changelog_src
+        token: ${{ inputs.github_token }}
+
+    - name: Install dependencies
+      shell: bash
+      run: |
+        pip install PyGithub
+
+    - name: Run generate-changelog-historical.py to create data.json
+      shell: bash
+      env:
+        GITHUB_TOKEN: ${{ inputs.github_token }}
+        START_DATE: ${{ steps.dates.outputs.start_date }}
+        END_DATE: ${{ steps.dates.outputs.end_date }}
+        ORG_NAME: ${{ inputs.org_name }}
+      run: |
+        # cd into super-changelog/scripts so that it can access utils.py
+        cd _super_changelog_src/scripts
+        python generate-changelog-historical.py
+
+    - name: Rename output to data.json
+      id: rename
+      shell: bash
+      run: |
+        START_DATE="${{ steps.dates.outputs.start_date }}"
+        END_DATE="${{ steps.dates.outputs.end_date }}"
+        SRC=_super_changelog_src/scripts/changelog_data/data/historical_changelog_${START_DATE}_to_${END_DATE}.json
+
+        if [ ! -f "$SRC" ]; then
+          echo "Error: Expected output file not found at $SRC"
+          exit 1
+        fi
+
+        cp "$SRC" ./data.json
+        echo "data_file=data.json" >> $GITHUB_OUTPUT
