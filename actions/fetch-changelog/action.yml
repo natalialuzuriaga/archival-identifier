@@ -69,14 +69,17 @@ runs:
     - name: Run generate-changelog-historical.py to create data.json
       shell: bash
       env:
-        GITHUB_TOKEN: ${{ inputs.github_token }}
+        GH_TOKEN: ${{ inputs.github_token }}
         START_DATE: ${{ steps.dates.outputs.start_date }}
         END_DATE: ${{ steps.dates.outputs.end_date }}
         ORG_NAME: ${{ inputs.org_name }}
       run: |
+        ls
+        pwd
         # cd into super-changelog/scripts so that it can access utils.py
         cd _super_changelog_src/scripts
-        python generate-changelog-historical.py
+        ls
+        python generate_changelog_historical.py
 
     - name: Rename output to data.json
       id: rename
@@ -84,7 +87,7 @@ runs:
       run: |
         START_DATE="${{ steps.dates.outputs.start_date }}"
         END_DATE="${{ steps.dates.outputs.end_date }}"
-        SRC=_super_changelog_src/scripts/changelog_data/data/historical_changelog_${START_DATE}_to_${END_DATE}.json
+        SRC="_super_changelog_src/scripts/changelog_data/data/historical_changelog_${START_DATE}_to_${END_DATE}.json"
 
         if [ ! -f "$SRC" ]; then
           echo "Error: Expected output file not found at $SRC"

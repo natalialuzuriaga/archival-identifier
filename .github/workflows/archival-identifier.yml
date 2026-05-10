@@ -1,0 +1,39 @@
+name: Identify repositories for archival
+on:
+  workflow_dispatch:
+    inputs:
+      start_date:
+        description: 'Start date (YYYY-MM-DD)'
+        required: true
+        type: string
+      end_date:
+        description: 'End date (YYYY_MM_DD)'
+        required: false
+        default: ''
+        type: string
+      org_name:
+        description: 'GitHub organization name'
+        required: false
+        default: 'DSACMS'
+
+permissions:
+  contents: write
+  pull-requests: write
+  issues: write
+
+jobs:
+  run-archival-identifier:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+      - name: Run archival-identifier
+        id: archive
+        uses: DinneK/archival-identifier-test-repo@main
+        with:
+          START_DATE: ${{ inputs.start_date }}
+          END_DATE: ${{ inputs.end_date }}
+          ORG_NAME: ${{ inputs.org_name }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

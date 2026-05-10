@@ -2,7 +2,7 @@ name: archival-identifier
 description: A GitHub Action to identify repositories that may be candidates for archival based on inactivity, usage, repository contents, and criticality score
 
 inputs:
-  ORG:
+  ORG_NAME:
     description: 'GitHub organization to analyze'
     required: true
   
@@ -33,7 +33,7 @@ runs:
       with:
         start_date: ${{ inputs.START_DATE }}
         end_date: ${{ inputs.END_DATE }}
-        org_name: ${{ inputs.ORG }}
+        org_name: ${{ inputs.ORG_NAME }}
         github_token: ${{ inputs.GITHUB_ORG_TOKEN }}
 
     - name: Set up Python
@@ -45,24 +45,16 @@ runs:
       shell: bash
       run: |
         pip install -r ${{ github.action_path }}/requirements.txt
-
-    # - name: Run superchangelog to retrieve development activity data
-    #   id: run-superchangelog
-    #   uses: DSACMS/superchangelog@main
-    #   with:
-    #     ORG: ${{ inputs.ORG }}
-    #     THRESHOLD_TIME: ${{ inputs.THRESHOLD_TIME }}
-    #     GITHUB_ORG_TOKEN: ${{ inputs.GITHUB_ORG_TOKEN }}
     
     - name: Run inactivity script
       id: identify-archival-candidates
       shell: bash
       env:
-        ORG: ${{ inputs.ORG }}
+        ORG_NAME: ${{ inputs.ORG_NAME }}
         THRESHOLD_TIME: ${{ inputs.THRESHOLD_TIME }}
         GITHUB_ORG_TOKEN: ${{ inputs.GITHUB_ORG_TOKEN }}
       run: |
-        python ${{ github.action_path }}/main.py data.json
+        python ${{ github.action_path }}/scripts/main.py data.json
 
     - name: Create issue with archival-identifier results on the repository
       uses: JasonEtco/create-an-issue@v2
@@ -76,5 +68,4 @@ runs:
       if: always()
       run: |
         rm -f data.json
-        rm -f _super_changelog_src/ 
-        
+        rm -rf _super_changelog_src/
