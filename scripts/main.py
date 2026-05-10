@@ -3,7 +3,7 @@ import sys
 import subprocess
 import os
 from datetime import datetime, timedelta
-from github import Github
+from github import Github # type: ignore
 
 def generate_markdown_table(stats_list):
     """
