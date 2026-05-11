@@ -11,8 +11,7 @@ inputs:
     default: ''
   org_name:
     description: 'GitHub organization name'
-    required: false
-    default: 'DSACMS'
+    required: true
   github_token:
     description: 'GitHub token for org access'
     required: true

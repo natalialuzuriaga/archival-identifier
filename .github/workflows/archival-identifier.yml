@@ -3,18 +3,17 @@ on:
   workflow_dispatch:
     inputs:
       start_date:
-        description: 'Start date (YYYY-MM-DD)'
+        description: 'Start date for historical data (YYYY-MM-DD) - required, e.g., 2026-01-01'
         required: true
         type: string
       end_date:
-        description: 'End date (YYYY_MM_DD)'
+        description: 'End date for historical data (YYYY-MM-DD) - defaults to today if not provided'
         required: false
         default: ''
         type: string
       org_name:
         description: 'GitHub organization name'
-        required: false
-        default: 'DSACMS'
+        required: true
 
 permissions:
   contents: write
@@ -31,7 +30,7 @@ jobs:
           fetch-depth: 0
       - name: Run archival-identifier
         id: archive
-        uses: DinneK/archival-identifier-test-repo@main
+        uses: DSACMS/archival-identifier@main
         with:
           START_DATE: ${{ inputs.start_date }}
           END_DATE: ${{ inputs.end_date }}
