@@ -3,7 +3,7 @@ import sys
 import subprocess
 import os
 from datetime import datetime, timedelta
-from github import Github
+from github import Github # type: ignore
 
 def generate_markdown_table(stats_list):
     """
@@ -15,7 +15,11 @@ def generate_markdown_table(stats_list):
     Returns:
         str: Markdown formatted table
     """
-    markdown = "# GitHub Issues Report\n\n"
+    markdown = "---\n"
+    markdown += "title: Archival Candidates Report\n"
+    markdown += "labels: archival, automated\n"
+    markdown += "---\n\n"
+    markdown += "# GitHub Issues Report\n\n"
     markdown += "| Repository | Open Issues | Closed Issues | Open PRs | Merged PRs | Closed PRs | Releases | Commits | Dependants | Criticality Score | Forks | Active Forks | Status |\n"
     markdown += "|---|---|---|---|---|---|---|---|---|---|---|---|---|\n"
     
@@ -168,7 +172,7 @@ def main():
         }
 
         # Run OpenSSF Criticality Score
-        dependents_count, criticality_score = get_criticality_score("DSACMS", repo["name"], os.getenv("GITHUB_AUTH_TOKEN"))
+        dependents_count, criticality_score = get_criticality_score("DSACMS", repo["name"], os.getenv("GITHUB_ORG_TOKEN"))
         stats[repo["name"]]["dependents_count"] = dependents_count # dependents_count
         stats[repo["name"]]["criticality_score"] = criticality_score # criticality_score
 
