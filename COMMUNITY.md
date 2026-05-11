@@ -64,6 +64,13 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for more details on the release process.
 	<tbody>
 		<tr>
             <td align="center">
+                <a href="https://github.com/DinneK">
+                    <img src="https://avatars.githubusercontent.com/u/63877492?v=4" width="100;" alt="DinneK"/>
+                    <br />
+                    <sub><b>Dinne Kopelevich</b></sub>
+                </a>
+            </td>
+            <td align="center">
                 <a href="https://github.com/natalialuzuriaga">
                     <img src="https://avatars.githubusercontent.com/u/29980737?v=4" width="100;" alt="natalialuzuriaga"/>
                     <br />
