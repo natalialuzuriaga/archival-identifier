@@ -1,4 +1,4 @@
-PyGitHub==1.54.0
+PyGitHub
 criticality-score==1.0.7
 pytest
 pylint
