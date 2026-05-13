@@ -22,6 +22,57 @@ TODO: Good to include since this is an agency-led project -->
 ### Team Mission
 TODO: Good to include since this is an agency-led project -->
 
+### Usage
+Create a new GitHub workflow file (e.g., `.github/workflows/archival-identifier.yml`) or add the following to an existing GitHub Actions workflow:
+
+```
+name: Identify repositories for archival
+on:
+  workflow_dispatch:
+    inputs:
+      start_date:
+        description: 'Start date for historical data (YYYY-MM-DD) - required, e.g., 2026-01-01'
+        required: true
+        type: string
+      end_date:
+        description: 'End date for historical data (YYYY-MM-DD) - defaults to today if not provided'
+        required: false
+        default: ''
+        type: string
+      org_name:
+        description: 'GitHub organization name'
+        required: true
+
+permissions:
+  contents: write
+  pull-requests: write
+  issues: write
+
+jobs:
+  run-archival-identifier:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+      - name: Run archival-identifier
+        id: archive
+        uses: DSACMS/archival-identifier@main
+        with:
+          START_DATE: ${{ inputs.start_date }}
+          END_DATE: ${{ inputs.end_date }}
+          ORG_NAME: ${{ inputs.org_name }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+```
+### Inputs
+| Input | Required | Description |
+| :---- |:---------|:------------|
+| `start_date` | Yes | 'Start date for historical data (YYYY-MM-DD) - required, e.g., 2026-01-01' |
+| `end_date` | No | End of date range defaults to today if omitted |
+| `org_name` | Yes | Name of GitHub organization to scan|
+| `GITHUB_TOKEN` | Yes | Automatically provided by GitHub Actions - no setup needed |
+
 ## Core Team
 
 A list of core team members responsible for the code and documentation in this repository can be found in [COMMUNITY.md](COMMUNITY.md).
