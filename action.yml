@@ -1,5 +1,5 @@
 name: archival-identifier
-description: A GitHub Action to identify repositories that may be candidates for archival based on inactivity, usage, repository contents, and criticality score
+description: A GitHub Action to identify repositories that are candidates for archival based on inactivity, reuse via forks, criticality score, and repository contents.
 
 inputs:
   ORG_NAME:
@@ -28,8 +28,9 @@ inputs:
 runs:
   using: 'composite'
   steps:
+      
     - name: Fetch historical changelog data
-      uses: ./actions/fetch-changelog
+      uses: DSACMS/archival-identifier/actions/fetch-changelog@main
       with:
         start_date: ${{ inputs.START_DATE }}
         end_date: ${{ inputs.END_DATE }}
@@ -52,7 +53,9 @@ runs:
       env:
         ORG_NAME: ${{ inputs.ORG_NAME }}
         THRESHOLD_TIME: ${{ inputs.THRESHOLD_TIME }}
-        GITHUB_ORG_TOKEN: ${{ inputs.GITHUB_ORG_TOKEN }}
+        GITHUB_AUTH_TOKEN: ${{ inputs.GITHUB_ORG_TOKEN }}
+        START_DATE: ${{ inputs.START_DATE }}
+        END_DATE: ${{ inputs.END_DATE }}
       run: |
         python ${{ github.action_path }}/scripts/main.py data.json
 
@@ -68,4 +71,4 @@ runs:
       if: always()
       run: |
         rm -f data.json
-        rm -rf _super_changelog_src/
+        rm -rf _super_changelog_src/ 
