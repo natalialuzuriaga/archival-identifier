@@ -27,11 +27,11 @@ def generate_markdown_table(stats_list, org_name, start_date, end_date):
     markdown += "\n- Development activity\n- Reuse via forks\n- [OpenSSF Criticality Score](https://github.com/ossf/criticality_score)\n- Repository Contents\n\n"
     markdown += "For more information about the criteria used to determine archival candidacy, please refer to the [archival-identifier documentation](https://github.com/DSACMS/archival-identifier).\n\n"
     markdown += f"## Results: {start_date} to {end_date}\n\n"
-    markdown += "| Repository | Open Issues | Closed Issues | Open PRs | Merged PRs | Closed PRs | Releases | Commits | Criticality Score | Forks | Active Forks | Status |\n"
-    markdown += "|---|---|---|---|---|---|---|---|---|---|---|---|\n"
+    markdown += "| Repository | Open Issues | Closed Issues | Open PRs | Merged PRs | Closed PRs | Releases | Commits | Criticality Score | Forks | Active Forks | Is Empty/README-Only | Status |\n"
+    markdown += "|---|---|---|---|---|---|---|---|---|---|---|---|---|\n"
     
     for repo, stats in stats_list.items():
-        markdown += f"| {repo} | {stats['issues_open_count']} | {stats['issues_closed_count']} | {stats['pr_open_count']} | {stats['pr_merged_count']} | {stats['pr_closed_count']} | {stats['release_count']} | {stats['commit_count']} | {stats['criticality_score']} | {stats['forks_count']} | {stats['active_forks_count']} | {stats['status']} |\n"
+        markdown += f"| {repo} | {stats['issues_open_count']} | {stats['issues_closed_count']} | {stats['pr_open_count']} | {stats['pr_merged_count']} | {stats['pr_closed_count']} | {stats['release_count']} | {stats['commit_count']} | {stats['criticality_score']} | {stats['forks_count']} | {stats['active_forks_count']} | {stats['is_empty_or_readme_only']} | {stats['status']} |\n"
     
     return markdown
 
@@ -46,36 +46,6 @@ def write_markdown_file(markdown_content, output_path="archival_candidates_repor
     with open(output_path, 'w') as f:
         f.write(markdown_content)
     print(f"Markdown report written to {output_path}")
-
-def get_criticality_score(org_name, repo_name):
-    """See https://github.com/ossf/criticality_score for more details on the OpenSSF Criticality Score.
-    
-    org_name (str)
-    repo_name (str)
-    
-    criticality_score (str): This value ranges from 0 to 1 (like a float) with lower scores indicating less critical projects.
-    
-    """
-
-    repo_url = f"github.com/{org_name}/{repo_name}"
-    cmd_str = f'criticality_score --repo {repo_url} --format csv'
-
-    try:
-        proc = subprocess.Popen(cmd_str, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, shell=True)
-        out, err = proc.communicate()
-        print(out.decode("utf-8"))
-        print(err)
-        
-        if not err:
-            csv_str = out.decode("utf-8")
-            items = csv_str.split(',')
-            criticality_score = items[26].rstrip()
-        else: 
-            criticality_score = None
-    except:
-        criticality_score = None
-
-    return criticality_score
 
 def define_status_determination(stats):
     """
@@ -102,6 +72,33 @@ def define_status_determination(stats):
         return "Dormant"
     else:
         return "Active"
+
+def get_criticality_score(repo_url):
+    """See https://github.com/ossf/criticality_score for more details on the OpenSSF Criticality Score.
+    
+    repo_url (str): URL of the repository
+    
+    criticality_score (str): This value ranges from 0 to 1 (like a float) with lower scores indicating less critical projects.
+    """
+
+    cmd_str = f'criticality_score --repo {repo_url} --format csv'
+
+    try:
+        proc = subprocess.Popen(cmd_str, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, shell=True)
+        out, err = proc.communicate()
+        print(out.decode("utf-8"))
+        print(err)
+        
+        if not err:
+            csv_str = out.decode("utf-8")
+            items = csv_str.split(',')
+            criticality_score = items[26].rstrip()
+        else: 
+            criticality_score = None
+    except:
+        criticality_score = None
+
+    return criticality_score
 
 
 def analyze_fork_activity(repo, start_date, end_date):
@@ -159,16 +156,20 @@ def analyze_fork_activity(repo, start_date, end_date):
 
 
 def main():
-
     # Setting variables from environment and command line arguments
     org_name = os.getenv("ORG_NAME")
     start_date = os.getenv("START_DATE")
     end_date = os.getenv("END_DATE") or datetime.now().strftime("%Y-%m-%d")
-
+    
     development_activity_file = sys.argv[1]
+    empty_repo_report_file = sys.argv[2]
 
     with open(development_activity_file, 'r') as f:
         data = json.load(f)
+
+    with open(empty_repo_report_file, 'r') as f:
+        empty_repo_data = json.load(f)
+    print (empty_repo_data)
 
     stats= {}
 
@@ -189,19 +190,27 @@ def main():
 
         # Run OpenSSF Criticality Score
         print(f"Analyzing {repo['name']}: Criticality Score")
-        criticality_score = get_criticality_score(os.getenv("ORG_NAME"), repo["name"])
+        criticality_score = get_criticality_score(repo["url"])
         stats[repo["name"]]["criticality_score"] = criticality_score
 
-        # TODO: Analyze fork activity
-        print(f"Analyzing {repo['name']}: Usage via forks")
+        # Analyze fork activity
+        print(f"Analyzing {repo['name']}: Usage via Forks")
         forks_count, active_forks_count = analyze_fork_activity(repo["name"], start_date, end_date)
         stats[repo["name"]]["forks_count"] = forks_count
         stats[repo["name"]]["active_forks_count"] = active_forks_count
 
+        ## Assess repository contents (e.g. is it empty or README-only?)
+        print(f"Analyzing {repo['name']}: Repository Contents")
+        repo_full_name = f"{org_name}/{repo['name']}"
+        if repo_full_name in empty_repo_data.get("readmeOnly", []):
+            stats[repo["name"]]["is_empty_or_readme_only"] = "README-only"
+        elif repo_full_name in empty_repo_data.get("empty", []):
+            stats[repo["name"]]["is_empty_or_readme_only"] = "Empty"
+        else:
+            stats[repo["name"]]["is_empty_or_readme_only"] = "Has Content"
+
         # Determine the status of the repository
         stats[repo["name"]]["status"] = define_status_determination(stats[repo["name"]])
-
-    # print(stats)
 
     # Generate and write markdown file
     markdown_content = generate_markdown_table(stats, org_name, start_date, end_date)

@@ -1,0 +1,59 @@
+name: Find empty and readme-only repositories
+description: "Find empty and readme-only repositories using empty-repos GitHub Actions workflow"
+
+inputs:
+  VISIBILITY:
+        description: 'Which repos to scan: all, public, or private'
+        required: true
+        default: 'all'
+        type: choice
+        options:
+          - all
+          - public
+          - private
+  ORG:
+    description: "Organization name to scan"
+    type: string
+    required: true
+
+  GITHUB_TOKEN:
+    description: "GitHub token for org access"
+    required: true
+
+outputs:
+  report_result:
+    description: "JSON object containing the empty/README-only report"
+    value: ${{ steps.report.outputs.result }}
+    
+runs:
+  using: 'composite'
+  steps:
+      - name: Checkout repository 📂
+        uses: actions/checkout@v6
+        with: 
+          repository: natalialuzuriaga/archival-identifier-test-repo
+          ref: main
+          path: archival-identifier
+          token: ${{ inputs.GITHUB_TOKEN }}
+
+      - name: Generate empty/README-only report 🕵️
+        id: report
+        uses: actions/github-script@v8.0.0
+        with:
+          github-token: ${{ inputs.GITHUB_TOKEN }}
+          script: |
+            // Load the scanner module safely
+            const EmptyReposScanner = require('./archival-identifier/actions/scan-empty-repos/empty-repos-scanner.js');
+
+            // Create scanner instance and run
+            const scanner = new EmptyReposScanner(github, context);
+            const org = '${{ inputs.ORG }}';
+            const visibility = '${{ inputs.VISIBILITY || 'all' }}';
+            const result = await scanner.run(org, visibility);
+            return result
+            
+      - name: Output results
+        shell: bash
+        run: |
+          echo "✅ ${{ inputs.ORG }} has been scanned for empty and readme-only repositories. See results below:"
+          echo '${{ steps.report.outputs.result }}' > empty-repo-report.json

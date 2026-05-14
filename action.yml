@@ -1,10 +1,15 @@
 name: archival-identifier
-description: A GitHub Action to identify repositories that are candidates for archival based on inactivity, reuse via forks, criticality score, and repository contents.
+description: A GitHub Action to identify repositories that may be candidates for archival based on inactivity, usage, repository contents, and criticality score
 
 inputs:
   ORG_NAME:
     description: 'GitHub organization to analyze'
     required: true
+  
+  VISIBILITY:
+    description: 'Which repos to scan: all, public, or private'
+    required: true
+    default: 'all'
   
   THRESHOLD_TIME:
     description: 'Number of days of inactivity to consider for archival'
@@ -24,7 +29,7 @@ inputs:
     description: 'End date for historical data (YYYY-MM-DD) - defaults to today'
     required: false
     default: ''
-
+    
 runs:
   using: 'composite'
   steps:
@@ -37,6 +42,14 @@ runs:
         org_name: ${{ inputs.ORG_NAME }}
         github_token: ${{ inputs.GITHUB_ORG_TOKEN }}
 
+    - name: Scan for empty and readme-only repositories
+      id: scan-empty-repos
+      uses: DSACMS/archival-identifier/actions/scan-empty-repos@main
+      with:
+        VISIBILITY: ${{ inputs.VISIBILITY }}
+        ORG: ${{ inputs.ORG_NAME }}
+        GITHUB_TOKEN: ${{ inputs.GITHUB_ORG_TOKEN }}
+        
     - name: Set up Python
       uses: actions/setup-python@v5
       with:
@@ -57,7 +70,7 @@ runs:
         START_DATE: ${{ inputs.START_DATE }}
         END_DATE: ${{ inputs.END_DATE }}
       run: |
-        python ${{ github.action_path }}/scripts/main.py data.json
+        python ${{ github.action_path }}/scripts/main.py data.json empty-repo-report.json
 
     - name: Create issue with archival-identifier results on the repository
       uses: JasonEtco/create-an-issue@v2
@@ -72,3 +85,4 @@ runs:
       run: |
         rm -f data.json
         rm -rf _super_changelog_src/ 
+        rm -f empty-repo-report.json
