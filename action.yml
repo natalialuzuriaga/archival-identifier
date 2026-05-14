@@ -11,11 +11,6 @@ inputs:
     required: true
     default: 'all'
   
-  THRESHOLD_TIME:
-    description: 'Number of days of inactivity to consider for archival'
-    required: false
-    default: '180'
-  
   GITHUB_ORG_TOKEN:
     description: 'GitHub token for org access'
     required: true
@@ -65,10 +60,9 @@ runs:
       shell: bash
       env:
         ORG_NAME: ${{ inputs.ORG_NAME }}
-        THRESHOLD_TIME: ${{ inputs.THRESHOLD_TIME }}
-        GITHUB_AUTH_TOKEN: ${{ inputs.GITHUB_ORG_TOKEN }}
         START_DATE: ${{ inputs.START_DATE }}
         END_DATE: ${{ inputs.END_DATE }}
+        GITHUB_AUTH_TOKEN: ${{ inputs.GITHUB_ORG_TOKEN }}
       run: |
         python ${{ github.action_path }}/scripts/main.py data.json empty-repo-report.json
 

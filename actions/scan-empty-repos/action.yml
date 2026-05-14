@@ -31,7 +31,7 @@ runs:
       - name: Checkout repository 📂
         uses: actions/checkout@v6
         with: 
-          repository: natalialuzuriaga/archival-identifier-test-repo
+          repository: DSACMS/archival-identifier
           ref: main
           path: archival-identifier
           token: ${{ inputs.GITHUB_TOKEN }}
