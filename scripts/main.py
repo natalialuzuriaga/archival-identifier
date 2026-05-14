@@ -2,7 +2,7 @@ import json
 import sys
 import subprocess
 import os
-from datetime import datetime, timedelta
+from datetime import datetime
 from github import Github
 
 def generate_markdown_table(stats_list, org_name, start_date, end_date):
@@ -86,6 +86,9 @@ def define_status_determination(stats):
     str: The determined status of the repository (e.g., "Active", "Dormant")
     """
     # Placeholder logic for status determination
+    if stats.get("archived", True):
+        return "Archived"
+
     if all(stats.get(field, 0) == 0 for field in [
         "issues_open_count",
         "issues_closed_count",
@@ -100,11 +103,14 @@ def define_status_determination(stats):
     else:
         return "Active"
 
-def analyze_fork_activity(repo):
+
+def analyze_fork_activity(repo, start_date, end_date):
     """
     Analyze the activity of forks for a given repository.
     
-    repo_obj: A PyGithub Repository object
+    repo (str): name of repository
+    start_date (str): start date for the reporting period (YYYY-MM-DD)
+    end_date (str): end date for the analysis period (YYYY-MM-DD)
     
     dict: A dictionary containing statistics about the forks (e.g., number of forks, recent activity)
     """
@@ -112,33 +118,34 @@ def analyze_fork_activity(repo):
     g = Github(os.getenv("GITHUB_AUTH_TOKEN"))
     org_name = os.getenv("ORG_NAME")
     
-    cutoff_date = datetime.utcnow() - timedelta(days=180)
-    cutoff_date_str = cutoff_date.strftime("%Y-%m-%dT%H:%M:%SZ")
+    start_date = datetime.strptime(start_date, "%Y-%m-%d")
+    end_date = datetime.strptime(end_date, "%Y-%m-%d")
 
     repo_obj = g.get_repo(f"{org_name}/{repo}")
-    forks_count = len(list(repo_obj.get_forks()))
+    forks = list(repo_obj.get_forks())
+    forks_count = len(forks)
+    print( f"{repo} has {forks_count} forks.")
     active_forks = []
 
-    for fork in repo_obj.get_forks():
-        print(f"Analyzing fork: {fork.full_name}...")  # Debug statement
+    for fork in forks:
+        print(f"Analyzing fork: {fork.full_name}...")
         
-        # First check for recent activity in fork
-        if fork.pushed_at < datetime.now(fork.pushed_at.tzinfo) - timedelta(days=180):
-            print(f"{fork.full_name} has no recent activity.")
-            continue
-        
-        # Then check if fork has diverged / has unique commits
+        # Check if fork is ahead by unique commits within reporting period
         try:
-            # Compare the fork's default branch with the parent's default branch
-            comparison = repo_obj.compare(repo_obj.default_branch, fork.default_branch)
+            
+            # Retrieves commits from the reporting period
+            fork_commits = fork.get_commits(since=start_date, until=end_date)
+            fork_commit_shas = { commit.sha for commit in fork_commits }
+            parent_commits = repo_obj.get_commits(since=start_date, until=end_date) # TODO: Use commits data from data.json
+            parent_commit_shas = { commit.sha for commit in parent_commits }
 
-            if comparison.ahead_by > 0:
-                # The fork has unique commits! It's active.
-                active_forks.append((fork, comparison.ahead_by))
-            else:
-                # The fork is not ahead, so it has no new commits on its default branch
-                print(f"{fork.full_name} has no unique commits.")
-                continue
+            # Uses the set difference to determine if there are unique commits in the fork that are not in the parent repository
+            unique_fork_commits = fork_commit_shas.difference(parent_commit_shas)
+            is_ahead = len(unique_fork_commits) > 0
+
+            if is_ahead:
+                active_forks.append(fork)
+                print(f"Fork {fork.full_name} is ahead of parent: {is_ahead} with {len(unique_fork_commits)} unique commits in the reporting period.")
 
         except Exception as e:
             # Fork has an empty default branch or encountered other issues. Classify as inactive.
@@ -146,7 +153,8 @@ def analyze_fork_activity(repo):
                 print("Error")
             else:
                 print(f"\nCould not compare {fork.full_name}: {e}")
-    
+        
+    print(f"{len(active_forks)} active forks found for {repo}.")
     return forks_count, len(active_forks)
 
 
@@ -169,11 +177,10 @@ def main():
 
         # Calculate statistics for the repository
         stats[repo["name"]] = {
-            "issues_open_count": len([issue for issue in repo["issues"] if issue["state"] == "open"]),
+            "archived": repo["archived"],
+            "issues_open_count": len([issue for issue in repo["issues"] if issue["state"] == "open"  and issue["author"] != "dependabot[bot]" and issue["author"] != "github-actions[bot]"]),
             "issues_closed_count": len([issue for issue in repo["issues"] if issue["state"] == "closed"]),
-            # TODO: for pulls, add the author github-actions[bot] dependabot[bot]
-            # TODO: filter pulls by author and mentions of "code.json" in the title
-            "pr_open_count": len([pr for pr in repo["pulls"] if pr["state"] == "open"]),
+            "pr_open_count": len([pr for pr in repo["pulls"] if pr["state"] == "open" and pr["author"] != "dependabot[bot]" and pr["author"] != "github-actions[bot]"]),
             "pr_merged_count": len([pr for pr in repo["pulls"] if pr["state"] == "closed" and pr["merged"] == True]),
             "pr_closed_count": len([pr for pr in repo["pulls"] if pr["state"] == "closed" and pr["merged"] == False]),
             "release_count": len(repo["releases"]),
@@ -183,11 +190,11 @@ def main():
         # Run OpenSSF Criticality Score
         print(f"Analyzing {repo['name']}: Criticality Score")
         criticality_score = get_criticality_score(os.getenv("ORG_NAME"), repo["name"])
-        stats[repo["name"]]["criticality_score"] = criticality_score # criticality_score
+        stats[repo["name"]]["criticality_score"] = criticality_score
 
         # TODO: Analyze fork activity
         print(f"Analyzing {repo['name']}: Usage via forks")
-        forks_count, active_forks_count = analyze_fork_activity(repo["name"])
+        forks_count, active_forks_count = analyze_fork_activity(repo["name"], start_date, end_date)
         stats[repo["name"]]["forks_count"] = forks_count
         stats[repo["name"]]["active_forks_count"] = active_forks_count
 
