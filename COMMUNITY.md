@@ -10,12 +10,12 @@ Roles to include, but not limited to: Project Owner, Technical Lead, Developers/
 
 | Role   | Name    | Affiliation    |
 | :----- | :------ | :------------- |
-| {role} | {names} | {affiliations} |
-
-<!-- TODO: A CODEOWNERS.md file is available in .github to define individuals responsible for specific parts of the codebase. Provide a reference to this file if used:
+| Software Engineer | Natalia Luzuriaga | DSAC |
+| Open Source Lead | Remy DeCausemaker | DSAC |
+| Software Engineer | Dinne Kopelevich | DSAC |
+| Software Engineer | Sachin Panayil | DSAC |
 
 See [CODEOWNERS.md](.github/CODEOWNERS.md) for a list of those responsible for the code and documentation in this repository.
--->
 
 See [Community Guidelines](#archival-identifier-open-source-community-guidelines) on principles and guidelines for participating in this open source project.
 
@@ -25,21 +25,25 @@ The members of archival-identifier community are responsible for guiding its dev
 
 ### Maintainers:
 
--
+- [@natalialuzuriaga](https://github.com/natalialuzuriaga)
+- [@DinneK](https://github.com/DinneK)
 
 <!-- TODO: List the individuals who are the maintainers. What groups/domains are maintainers a part of? Does your project have domains/areas that are maintained by specific people? List @USERNAMES directly, or any @ALIASES for groups/teams. -->
 
 ### Approvers:
 
--
+- [@natalialuzuriaga](https://github.com/natalialuzuriaga)
+- [@DinneK](https://github.com/DinneK)
+- [@decause-gov](https://github.com/decause-gov)
 
 <!-- TODO: Who are the project approvers? List out @USERNAMES where possible so they can be tagged in issues/PRs directly. -->
 
 ### Reviewers:
 
--
-
-<!-- TODO: Who are the project reviewers? List out @USERNAMES where possible so they can be tagged in issues/PRs directly. -->
+- [@natalialuzuriaga](https://github.com/natalialuzuriaga)
+- [@sachin-panayil](https://github.com/sachin-panayil)
+- [@DinneK](https://github.com/DinneK)
+- [@decause-gov](https://github.com/decause-gov)
 
 | Roles      | Responsibilities                               | Requirements                                                                      | Defined by                                                |
 | ---------- | :--------------------------------------------- | :-------------------------------------------------------------------------------- | :-------------------------------------------------------- |
