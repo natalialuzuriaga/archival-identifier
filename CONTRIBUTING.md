@@ -1,8 +1,4 @@
-<!--- # NOTE: Modify sections marked with `TODO` -->
-
 # How to Contribute
-
-<!-- Basic instructions about where to send patches, check out source code, and get development support.-->
 
 We're so thankful you're considering contributing to an [open source project of
 the U.S. government](https://code.gov/)! If you're unsure about anything, just
@@ -15,53 +11,57 @@ We encourage you to read this project's CONTRIBUTING policy (you are here), its
 
 ## Getting Started
 
-<!--- TODO: If you have 'good-first-issue' or 'easy' labels for newcomers, mention them here.-->
+Look for issues labeled `good-first-issue` for good opportunities to contribute. These issues are specifically chosen to help newcomers get involved with the project.
 
 ### Team Specific Guidelines
 
-<!-- TODO: This section helps contributors understand any team structure in the project (formal or informal.) Encouraged to point towards the COMMUNITY.md file for further details.-->
+- Please try to keep pull requests to a reasonable size; try to split large contributions to multiple PRs
+- Document and explain the contribution clearly according to provided standards when possible.
+- Feel free to reach out to us if there is any confusion. A list of the project maintainers is found here: [COMMUNITY.md](./COMMUNITY.md)
 
 ### Building dependencies
 
-<!--- TODO: This step is often skipped, so don't forget to include the steps needed to install on your platform. If you project can be multi-platform, this is an excellent place for first time contributors to send patches!-->
+The project uses the following dependencies:
+- [super-changelog](https://github.com/DSACMS/super-changelog)
+- [OpenSSF Criticality Score Python Library v1.0.7](https://github.com/ossf/criticality_score/releases/tag/v1.0.7)
+- [empty-repos](https://github.com/github/empty-repos) GitHub Action
+
+To build the dependencies listed in [requirements.txt](./requirements.txt) for `main.py`, run
+`pip install -r requirements.txt`.
+
+> [!IMPORTANT]  
+> criticality-score v1.0.7 and PyGitHub 1.54.0 are pinned for compatibility between the two libraries. We are currently using a deprecated version of the criticality score library, which uses an older version of PyGitHub. We plan to upgrade and use the latest version of the criticality-score library soon.
+
+The GitHub CLI can be used to run and test the action locally.
 
 ### Building the Project
 
-<!--- TODO: Be sure to include build scripts and instructions, not just the source code itself! -->
+N/A. Users can simply fork/clone the repo, reference the GitHub Actions in their workflows, or run the python and subaction scripts directly.
 
 ### Workflow and Branching
 
-<!--- TODO: Workflow Example
 We follow the [GitHub Flow Workflow](https://guides.github.com/introduction/flow/)
 
 1.  Fork the project
 2.  Check out the `main` branch
 3.  Create a feature branch
 4.  Write code and tests for your change
-5.  From your branch, make a pull request against `DSACMS/archival-identifier/main`
+5.  From your branch, make a pull request against `DSACMS/archival-identifier/dev`
 6.  Work with repo maintainers to get your change reviewed
-7.  Wait for your change to be pulled into `DSACMS/archival-identifier/main`
+7.  Wait for your change to be pulled into `DSACMS/archival-identifier/dev`
 8.  Delete your feature branch
--->
 
 ### Testing Conventions
 
-<!--- TODO: Discuss where tests can be found, how they are run, and what kind of tests/coverage strategy and goals the project has. -->
+<!-- TODO: Write tests -->
+TBD
 
 ### Coding Style and Linters
 
-<!--- TODO: HIGHLY ENCOURAGED. Specific tools will vary between different languages/frameworks (e.g. Black for python, eslint for JavaScript, etc...)
-
-1. Mention any style guides you adhere to (e.g. pep8, etc...)
-2. Mention any linters your project uses (e.g. flake8, jslint, etc...)
-3. Mention any naming conventions your project uses (e.g. Semantic Versioning, CamelCasing, etc...)
-4. Mention any other content guidelines the project adheres to (e.g. plainlanguage.gov, etc...)
-
--->
+<!-- TODO: Implement linters -->
+TBD
 
 ### Writing Issues
-
-<!--- TODO: Example Issue Guides
 
 When creating an issue please try to adhere to the following format:
 
@@ -79,12 +79,7 @@ When creating an issue please try to adhere to the following format:
 
     List all relevant steps to reproduce the observed behavior.
 
-    see our .github/ISSUE_TEMPLATE.md for more examples.
--->
-
 ### Writing Pull Requests
-
-<!-- TODO: Make a brief statement about where to file pull/merge requests, and conventions for doing so. Link to PULL_REQUEST_TEMPLATE.md file.
 
 Comments should be formatted to a width no greater than 80 columns.
 
@@ -120,45 +115,17 @@ Some important notes regarding the summary line:
 * Do not end in a period — this is a title/subject
 * Prefix the subject with its scope
 
-    see our .github/PULL_REQUEST_TEMPLATE.md for more examples.
--->
-
 ## Reviewing Pull Requests
 
-<!--- TODO: Make a brief statement about how pull-requests are reviewed, and who is doing the reviewing. Linking to COMMUNITY.md can help.
+When you submit a pull request on GitHub, it will be reviewed by the project community, and once the changes are approved, your commits will be brought into a development branch for additional testing. Once the changes are merged, they will be pushed back to the main branch.
 
-Code Review Example
-
-The repository on GitHub is kept in sync with an internal repository at
-github.cms.gov. For the most part this process should be transparent to the
-project users, but it does have some implications for how pull requests are
-merged into the codebase.
-
-When you submit a pull request on GitHub, it will be reviewed by the project
-community (both inside and outside of github.cms.gov), and once the changes are
-approved, your commits will be brought into github.cms.gov's internal system for
-additional testing. Once the changes are merged internally, they will be pushed
-back to GitHub with the next sync.
-
-This process means that the pull request will not be merged in the usual way.
-Instead a member of the project team will post a message in the pull request
-thread when your changes have made their way back to GitHub, and the pull
-request will be closed.
-
-The changes in the pull request will be collapsed into a single commit, but the
-authorship metadata will be preserved.
-
--->
+If the issue the pull request is addressing is particularly urgent, the pull request will be merged directly into the main branch.
 
 ## Shipping Releases
 
-<!-- TODO: What cadence does your project ship new releases? (e.g. one-time, ad-hoc, periodically, upon merge of new patches) Who does so? Below is a sample template you can use to provide this information.
-
 archival-identifier will see regular updates and new releases. This section describes the general guidelines around how and when a new release is cut.
 
--->
-
-<!-- ### Table of Contents
+### Table of Contents
 
 - [Versioning](#versioning)
   - [Breaking vs. non-breaking changes](#breaking-vs-non-breaking-changes)
@@ -167,14 +134,14 @@ archival-identifier will see regular updates and new releases. This section desc
   - [Goals](#goals)
   - [Schedule](#schedule)
   - [Communication and Workflow](#communication-and-workflow)
-  - [Beta Features](#beta-features)
+  <!-- - [Beta Features](#beta-features) -->
 - [Preparing a Release Candidate](#preparing-a-release-candidate)
   - [Incorporating feedback from review](#incorporating-feedback-from-review)
 - [Making a Release](#making-a-release)
 - [Auto Changelog](#auto-changelog)
-- [Hotfix Releases](#hotfix-releases) -->
+- [Hotfix Releases](#hotfix-releases)
 
-<!-- ### Versioning
+### Versioning
 
 archival-identifier uses [Semantic Versioning](https://semver.org/). Each release is associated with a [`git tag`](github.com/DSACMS/archival-identifier/tags) of the form `X.Y.Z`.
 
@@ -182,53 +149,53 @@ Given a version number in the `MAJOR.MINOR.PATCH` (eg., `X.Y.Z`) format, here ar
 
 - **MAJOR** version - make breaking/incompatible API changes
 - **MINOR** version - add functionality in a backwards compatible manner
-- **PATCH** version - make backwards compatible bug fixes -->
+- **PATCH** version - make backwards compatible bug fixes
 
-<!-- ### Breaking vs. non-breaking changes
+### Breaking vs. non-breaking changes
 
-TODO: Examples and protocol for breaking changes
+Breaking changes for archival-identifier include modifications that affect how the action is consumed in workflows, such as:
+- Renaming or removing action inputs or outputs
+- Changing default behaviors that would alter existing workflows
+- Modifying the structure or format of generated content (issues, PRs, README notices) that downstream automation may depend on
 
-Definitions for breaking changes will vary depending on the use-case and project but generally speaking if changes break standard workflows in any way then they should be put in a major version update.
--->
+Non-breaking changes include bug fixes, new optional features, documentation updates, and internal refactoring that doesn't affect the action's interface.
 
-<!-- #### Ongoing version support
+#### Ongoing version support
 
-TODO: Explanation of general thought process
+The following versions of the project are actively supported:
+- TBD
 
-Explain the project’s thought process behind what versions will and won’t be supported in the future.
--->
+### Release Process
 
-<!-- TODO: List of supported releases
+The sections below define the release process itself, including timeline, roles, and communication best practices.
 
-This section should make clear which versions of the project are considered actively supported.
--->
+#### Goals
 
-<!-- ### Release Process
+Our release structure aims to deliver value to users through:
 
-The sections below define the release process itself, including timeline, roles, and communication best practices. -->
+- Ensuring the action consistently performs repository archival tasks
+- Delivering new features and functionality based on our product roadmap
+- Providing bug fixes
+- Keeping documentation up-to-date with new features
+- Incorporating feedback and contributions from external collaborators
+- Addressing vulnerabilities through hotfix releases when necessary
 
-<!-- #### Goals
+#### Schedule
 
-TODO: Explain the goals of your project’s release structure
+We follow a feature-based release schedule where new versions are released upon completion of features on the project roadmap rather than on a fixed time-based cadence. This approach ensures that each release delivers meaningful functionality and has been properly tested.
 
-This should ideally be a bulleted list of what your regular releases will deliver to key users and stakeholders
--->
+Release timing will depend on:
+- Completion and testing of roadmap features
+- Community feedback and prioritization
+- Complexity and scope of changes
 
-<!-- #### Schedule
+For special cases such as security updates or critical bugfixes, hotfix releases will be made immediately as needed, independent of the feature release schedule.
 
-TODO: Communicate the timing of the regular release structure
+#### Communication and Workflow
 
-For example, if you plan on creating regular releases on a weekly basis you should communicate that as well as the typical days upcoming releases will become tagged.
-
-You should also communicate special cases such as security updates or critical bugfixes and how they would likely be released earlier than what is usually scheduled.
--->
-
-<!-- #### Communication and Workflow
-
-TODO: Communicate proper channels to be notified about releases
-
-Communicate the slack channels, mailing lists, or other means of pushing out release notifications.
--->
+We will notify users about new releases through the following channels:
+- #cms-ospo slack channel for agency communications
+- #wg-ospo CHAOSS slack channel for the greater OSPO community
 
 <!-- TODO: (OPTIONAL) Support beta feature testing
 ## Beta Features
@@ -238,7 +205,7 @@ When a new beta feature is created for a release, make sure to create a new Issu
 Once an item is moved out of beta, close its Issue and change the text to say 'Beta feature: No (as of X.X.x)'.
 -->
 
-<!-- ### Preparing a Release Candidate
+### Preparing a Release Candidate
 
 The following steps outline the process to prepare a Release Candidate of archival-identifier. This process makes public the intention and contents of an upcoming release, while allowing work on the next release to continue as usual in `dev`.
 
@@ -262,7 +229,7 @@ The following steps outline the process to prepare a Release Candidate of archiv
    git push --tags
    ```
 
-3. Publish a [pre-Release in GitHub](proj-releases-new):
+3. Publish a [pre-Release in GitHub](https://github.com/DSACMS/archival-identifier/releases/new):
 
    ```md
    Tag version: [tag you just pushed]
@@ -274,13 +241,13 @@ The following steps outline the process to prepare a Release Candidate of archiv
 
 4. Open a Pull Request to `main` from the release branch (eg. `0.5.0-rc1`). This pull request is where review comments and feedback will be collected.
 
-5. Conduct Review of the Pull Request that was opened. -->
+5. Conduct Review of the Pull Request that was opened.
 
-<!-- #### Incorporating feedback from review
+#### Incorporating feedback from review
 
 The review process may result in changes being necessary to the release candidate.
 
-For example, if the second Release Candidate for `0.5.0` is being prepared, after committing necessary changes, create a tag on the tip of the release branch like `0.5.0-rc2` and make a new [GitHub pre-Release](proj-releases-new) from there:
+For example, if the second Release Candidate for `0.5.0` is being prepared, after committing necessary changes, create a tag on the tip of the release branch like `0.5.0-rc2` and make a new [GitHub pre-Release](https://github.com/DSACMS/archival-identifier/releases/new) from there:
 
 ```bash
 git fetch
@@ -290,9 +257,9 @@ git tag 0.5.0-rc2
 git push --tags
 ```
 
-Repeat as-needed for subsequent Release Candidates. Note the release branch will be pushed to `dev` at key points in the approval process to ensure the community is working with the latest code. -->
+Repeat as-needed for subsequent Release Candidates. Note the release branch will be pushed to `dev` at key points in the approval process to ensure the community is working with the latest code.
 
-<!-- ### Making a Release
+### Making a Release
 
 The following steps describe how to make an approved [Release Candidate](#preparing-a-release-candidate) an official release of archival-identifier:
 
@@ -302,7 +269,7 @@ The following steps describe how to make an approved [Release Candidate](#prepar
 
 3. **Dev**. Open a Pull Request from the release branch to `dev`. Merge this PR to ensure any changes to the Release Candidate during the review process make their way back into `dev`.
 
-4. **Release**. Publish a [Release in GitHub](proj-releases-new) with the following information
+4. **Release**. Publish a [Release in GitHub](https://github.com/DSACMS/archival-identifier/releases/new) with the following information
 
    - Tag version: [X.Y.Z] (note this will create the tag for the `main` branch code when you publish the release)
    - Target: main
@@ -310,37 +277,13 @@ The following steps describe how to make an approved [Release Candidate](#prepar
    - Description: copy in Release Notes created earlier
    - This is a pre-release: DO NOT check
 
-5. **Branch**. Finally, keep the release branch and don't delete it. This allows easy access to a browsable spec. -->
+5. **Branch**. Finally, keep the release branch and don't delete it. This allows easy access to a browsable spec.
 
-<!-- ### Auto Changelog
+### Auto Changelog
 
-It is recommended to use the provided auto changelog github workflow to populate the project’s CHANGELOG.md file:
+The [auto-changelog.yml](./.github/workflows/auto-changelog.yml) workflow will be used to update CHANGELOG.md. This provided workflow will be triggered when a new release is created, automatically populate the CHANGELOG.md with all of the associated changes created since the last release that are included in the current release.
 
-```yml
-name: Changelog
-on:
-  release:
-    types:
-      - created
-jobs:
-  changelog:
-    runs-on: ubuntu-latest
-    steps:
-      - name: "Auto Generate changelog"
-        uses: heinrichreimer/action-github-changelog-generator@v2.3
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-```
-
-This provided workflow will automatically populate the CHANGELOG.md with all of the associated changes created since the last release that are included in the current release.
-
-This workflow will be triggered when a new release is created.
-
-If you do not wish to use automatic changelogs, you can delete the workflow and update the CHANGELOG.md file manually. Although, this is not recommended.
-
-For best practices on writing changelogs, see: https://keepachangelog.com/en/1.1.0/#how -->
-
-<!-- ### Hotfix Releases
+### Hotfix Releases
 
 In rare cases, a hotfix for a prior release may be required out-of-phase with the normal release cycle. For example, if a critical bug is discovered in the `0.3.x` line after `0.4.0` has already been released.
 
@@ -364,7 +307,7 @@ In rare cases, a hotfix for a prior release may be required out-of-phase with th
    git push --tags
    ```
 
-4. Create a [GitHub Release](proj-releases-new) from this tag and the support branch. For example if `0.3.3` is the new hotfix version:
+4. Create a [GitHub Release](https://github.com/DSACMS/archival-identifier/releases/new) from this tag and the support branch. For example if `0.3.3` is the new hotfix version:
 
    ```md
    Tag version: 0.3.3
@@ -374,16 +317,10 @@ In rare cases, a hotfix for a prior release may be required out-of-phase with th
    This is a pre-release: DO NOT check
    ```
 
-[proj-releases-new]: https://github.com/DSACMS/archival-identifier/releases/new
--->
-
 ## Documentation
-
-<!-- TODO: Documentation Example
 
 We also welcome improvements to the project documentation or to the existing
 docs. Please file an [issue](https://github.com/DSACMS/archival-identifier/issues).
--->
 
 ## Policies
 
