@@ -14,6 +14,15 @@ on:
       org_name:
         description: 'GitHub organization name'
         required: true
+      visibility:
+        description: 'Which repos to scan: all, public, or private'
+        required: true
+        default: 'all'
+        type: choice
+        options:
+          - all
+          - public
+          - private
 
 permissions:
   contents: write
@@ -35,4 +44,5 @@ jobs:
           START_DATE: ${{ inputs.start_date }}
           END_DATE: ${{ inputs.end_date }}
           ORG_NAME: ${{ inputs.org_name }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_ORG_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          VISIBILITY: ${{ inputs.visibility }}
