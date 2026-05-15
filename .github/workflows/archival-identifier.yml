@@ -44,5 +44,5 @@ jobs:
           START_DATE: ${{ inputs.start_date }}
           END_DATE: ${{ inputs.end_date }}
           ORG_NAME: ${{ inputs.org_name }}
-          GITHUB_ORG_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_ORG_TOKEN: ${{ secrets.GH_TOKEN }}
           VISIBILITY: ${{ inputs.visibility }}
