@@ -162,10 +162,14 @@ def main():
     end_date = os.getenv("END_DATE") or datetime.now().strftime("%Y-%m-%d")
     
     development_activity_file = sys.argv[1]
-    empty_repo_report_file = sys.argv[2]
+    criticality_score_file = sys.argv[2]
+    empty_repo_report_file = sys.argv[3]
 
     with open(development_activity_file, 'r') as f:
-        data = json.load(f)
+        repository_development_data = json.load(f)
+    
+    with open(criticality_score_file, 'r') as f:
+        criticality_score_data = json.load(f)
 
     with open(empty_repo_report_file, 'r') as f:
         empty_repo_data = json.load(f)
@@ -173,7 +177,7 @@ def main():
 
     stats= {}
 
-    for repo in data["repos"]:
+    for repo in repository_development_data["repos"]:
         print(f"Analyzing {repo['name']}: Development Activity")
 
         # Calculate statistics for the repository
@@ -190,7 +194,7 @@ def main():
 
         # Run OpenSSF Criticality Score
         print(f"Analyzing {repo['name']}: Criticality Score")
-        criticality_score = get_criticality_score(repo["url"])
+        criticality_score = criticality_score_data.get(repo["name"], 0)
         stats[repo["name"]]["criticality_score"] = criticality_score
 
         # Analyze fork activity
