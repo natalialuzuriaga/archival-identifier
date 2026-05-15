@@ -1,0 +1,54 @@
+name: Go CI
+description: 'Calculate criticality scores for all repos in a GitHub organization'
+
+inputs:
+  ORG_NAME:
+    description: 'GitHub organization name to fetch list of repos for'
+    required: true
+  GITHUB_TOKEN:
+    description: 'GitHub token for org access'
+    required: true
+
+outputs:
+  data_file:
+    description: 'Path to the criticality scores JSON file'
+    value: criticality_scores.json
+
+runs:
+  using: 'composite'
+  steps:
+
+    - name: Set up Go
+      uses: actions/setup-go@v5
+      with:
+        go-version: '1.22'
+        cache: true
+
+    - name: Run and save criticality score for all repos
+      id: criticality
+      shell: bash
+      run: |
+        # Install criticality_score tool
+        go install github.com/ossf/criticality_score/v2/cmd/criticality_score@latest
+
+        # Saves into repos array
+        mapfile -t repos < <(
+          gh api orgs/${{ inputs.ORG_NAME }}/repos --paginate --jq '.[].name'
+        )
+
+        # Calculates criticality score for each repo and saves into result variable as JSON
+        result=$(
+          for repo_name in "${repos[@]}"; do
+            repo_url="https://github.com/${{ inputs.ORG_NAME }}/${repo_name}"
+            echo "Scoring: $repo_url" >&2
+            criticality_score -depsdev-disable "$repo_url" -format=json 2>/dev/null \
+              | jq --arg repo "$repo_name" '{($repo): (.default_score // "N/A")}'
+          done | jq -s 'add'
+        )
+
+        # Output and saves results into criticality_scores.json
+        echo "$result" > criticality_scores.json
+        echo "Criticality scores: $result"
+      env:
+        GITHUB_AUTH_TOKEN: ${{ inputs.GITHUB_TOKEN }}
+        GH_TOKEN: ${{ inputs.GITHUB_TOKEN }}
