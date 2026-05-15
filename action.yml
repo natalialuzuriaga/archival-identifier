@@ -31,7 +31,7 @@ runs:
       
     - name: Fetch historical changelog data
       id: fetch-changelog
-      uses: natalialuzuriaga/archival-identifier/actions/fetch-changelog@main
+      uses: DSACMS/archival-identifier/actions/fetch-changelog@main
       with:
         start_date: ${{ inputs.START_DATE }}
         end_date: ${{ inputs.END_DATE }}
@@ -40,14 +40,14 @@ runs:
     
     - name: Calculate criticality scores for all repos
       id: calculate-criticality
-      uses: natalialuzuriaga/archival-identifier/actions/calculate-criticality-scores@main
+      uses: DSACMS/archival-identifier/actions/calculate-criticality-scores@main
       with:
         ORG_NAME: ${{ inputs.ORG_NAME }}
         GITHUB_TOKEN: ${{ inputs.GITHUB_ORG_TOKEN }}
 
     - name: Scan for empty and readme-only repositories
       id: scan-empty-repos
-      uses: natalialuzuriaga/archival-identifier/actions/scan-empty-repos@main
+      uses: DSACMS/archival-identifier/actions/scan-empty-repos@main
       with:
         VISIBILITY: ${{ inputs.VISIBILITY }}
         ORG: ${{ inputs.ORG_NAME }}

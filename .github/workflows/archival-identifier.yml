@@ -39,7 +39,7 @@ jobs:
           fetch-depth: 0
       - name: Run archival-identifier
         id: archive
-        uses: natalialuzuriaga/archival-identifier@main
+        uses: DSACMS/archival-identifier@main
         with:
           START_DATE: ${{ inputs.start_date }}
           END_DATE: ${{ inputs.end_date }}
