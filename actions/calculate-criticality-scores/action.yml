@@ -41,7 +41,7 @@ runs:
           echo "Scoring: $repo_url" >&2
 
           score=$(criticality_score -depsdev-disable "$repo_url" -format=json 2>/dev/null \
-            | jq --arg repo "$repo_name" '{($repo): (.default_score // "N/A")}' 2>/dev/null)
+            | jq --arg repo "$repo_name" '{($repo): (.default_score // "N/A")}' 2>/dev/null) || true
           if [[ -n "$score" ]]; then
             scores+=("$score")
           fi
