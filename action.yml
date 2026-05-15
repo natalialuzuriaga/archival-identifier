@@ -30,7 +30,7 @@ runs:
   steps:
       
     - name: Fetch historical changelog data
-      uses: DSACMS/archival-identifier/actions/fetch-changelog@main
+      uses: natalialuzuriaga/archival-identifier/actions/fetch-changelog@main
       with:
         start_date: ${{ inputs.START_DATE }}
         end_date: ${{ inputs.END_DATE }}
@@ -39,7 +39,7 @@ runs:
 
     - name: Scan for empty and readme-only repositories
       id: scan-empty-repos
-      uses: DSACMS/archival-identifier/actions/scan-empty-repos@main
+      uses: natalialuzuriaga/archival-identifier/actions/scan-empty-repos@main
       with:
         VISIBILITY: ${{ inputs.VISIBILITY }}
         ORG: ${{ inputs.ORG_NAME }}
