@@ -92,3 +92,7 @@ runs:
 
         cp "$SRC" ./data.json
         echo "data_file=data.json" >> $GITHUB_OUTPUT
+    - name: Install dependencies
+      shell: bash
+      run: |
+         pip uninstall PyGithub -y
