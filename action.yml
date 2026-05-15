@@ -10,11 +10,6 @@ inputs:
     description: 'Which repos to scan: all, public, or private'
     required: true
     default: 'all'
-  
-  GITHUB_ORG_TOKEN:
-    description: 'GitHub token for org access'
-    required: true
-    default: ${{ github.token }}
 
   START_DATE:
     description: 'Start date for historical data (YYYY-MM-DD) - required, e.g., 2026-01-01'
@@ -24,6 +19,11 @@ inputs:
     description: 'End date for historical data (YYYY-MM-DD) - defaults to today'
     required: false
     default: ''
+  
+  GITHUB_ORG_TOKEN:
+    description: 'GitHub token for org access'
+    required: true
+    default: ${{ github.token }}
     
 runs:
   using: 'composite'

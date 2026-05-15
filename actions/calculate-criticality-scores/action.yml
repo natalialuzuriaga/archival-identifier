@@ -17,7 +17,6 @@ outputs:
 runs:
   using: 'composite'
   steps:
-
     - name: Set up Go
       uses: actions/setup-go@v5
       with:
@@ -41,8 +40,7 @@ runs:
           for repo_name in "${repos[@]}"; do
             repo_url="https://github.com/${{ inputs.ORG_NAME }}/${repo_name}"
             echo "Scoring: $repo_url" >&2
-            criticality_score -depsdev-disable "$repo_url" -format=json 2>/dev/null \
-              | jq --arg repo "$repo_name" '{($repo): (.default_score // "N/A")}'
+            criticality_score -depsdev-disable "$repo_url" -format=json 2>/dev/null \ | jq --arg repo "$repo_name" '{($repo): (.default_score // "N/A")}'
           done | jq -s 'add'
         )
 
