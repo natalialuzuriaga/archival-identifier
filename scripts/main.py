@@ -73,34 +73,6 @@ def define_status_determination(stats):
     else:
         return "Active"
 
-def get_criticality_score(repo_url):
-    """See https://github.com/ossf/criticality_score for more details on the OpenSSF Criticality Score.
-    
-    repo_url (str): URL of the repository
-    
-    criticality_score (str): This value ranges from 0 to 1 (like a float) with lower scores indicating less critical projects.
-    """
-
-    cmd_str = f'criticality_score --repo {repo_url} --format csv'
-
-    try:
-        proc = subprocess.Popen(cmd_str, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, shell=True)
-        out, err = proc.communicate()
-        print(out.decode("utf-8"))
-        print(err)
-        
-        if not err:
-            csv_str = out.decode("utf-8")
-            items = csv_str.split(',')
-            criticality_score = items[26].rstrip()
-        else: 
-            criticality_score = None
-    except:
-        criticality_score = None
-
-    return criticality_score
-
-
 def analyze_fork_activity(repo, start_date, end_date):
     """
     Analyze the activity of forks for a given repository.
