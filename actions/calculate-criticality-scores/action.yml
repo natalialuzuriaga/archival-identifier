@@ -40,8 +40,9 @@ runs:
           for repo_name in "${repos[@]}"; do
             repo_url="https://github.com/${{ inputs.ORG_NAME }}/${repo_name}"
             echo "Scoring: $repo_url" >&2
-            criticality_score -depsdev-disable "$repo_url" -format=json 2>/dev/null \ | jq --arg repo "$repo_name" '{($repo): (.default_score // "N/A")}'
-          done | jq -s 'add'
+            criticality_score -depsdev-disable "$repo_url" -format=json 2>/dev/null \
+              | jq --arg repo "$repo_name" '{($repo): (.default_score // "N/A")}'
+            done | jq -s 'add'
         )
 
         # Output and saves results into criticality_scores.json
