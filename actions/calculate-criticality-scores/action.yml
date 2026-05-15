@@ -39,7 +39,7 @@ runs:
         for repo_name in "${repos[@]}"; do
           repo_url="https://github.com/${{ inputs.ORG_NAME }}/${repo_name}"
           echo "Scoring: $repo_url" >&2
-          
+
           score=$(criticality_score -depsdev-disable "$repo_url" -format=json 2>/dev/null \
             | jq --arg repo "$repo_name" '{($repo): (.default_score // "N/A")}' 2>/dev/null)
           if [[ -n "$score" ]]; then
@@ -47,12 +47,12 @@ runs:
           fi
         done
 
-        # Merge all score objects into one JSON object
-        if [[ ${#scores[@]} -eq 0 ]]; then
-          result="{}"
-        else
-          result=$(printf '%s\n' "${scores[@]}" | jq -s 'add')
-        fi
+          # Merge all score objects into one JSON object
+          if [[ ${#scores[@]} -eq 0 ]]; then
+            result="{}"
+          else
+            result=$(printf '%s\n' "${scores[@]}" | jq -s 'add')
+          fi
 
         # Output and saves results into criticality_scores.json
         echo "$result" > criticality_scores.json
